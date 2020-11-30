@@ -1,3 +1,9 @@
+/*
+Neil Chatterjee 2020
+
+@TODO: Document the ever living hell out of this.
+*/
+
 // Neil Chatterjee 2020
 // The worlds simplest and smallest "random" UUID string generator. This is meant to be dependency-free and easy to build and run on different platforms.
 // There are certainly UUID generation methods that are more 'industrial strength' but I found no header-only solutions like this.
@@ -7,16 +13,16 @@
 //
 #pragma once
 
-#define DEBUG_UUIDS
+
 
 #include <string>
 #include <cstdlib>
 #include <random>
 #include <iostream>
 #include <set>
-#ifdef DEBUG_UUIDS
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
 #include <cassert>
-#endif //DEBUG_UUIDS
+#endif //DEEP_TEST_ULTRA_SIMPLE_UUIDS
 
 namespace UltraSimpleUUID {
     const std::string CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -24,37 +30,50 @@ namespace UltraSimpleUUID {
     const unsigned short UUID_NUM_CHARS = 32;
     const unsigned short UUID_STR_LEN = UUID_NUM_CHARS + HYPHEN_POSITIONS.size();
 
-    struct uuid 
+    class Uuid 
     {
     public:
-        int32_t values[6] = { 0,0,0,0,0,0 };
-
         std::string toString() {
             std::string uuid = std::string(UUID_STR_LEN, '-');
             int i = 0;
             for (int n = 0; n < UUID_NUM_CHARS; n++)
             {
-                if (HYPHEN_POSITIONS.find(n) != HYPHEN_POSITIONS.end())
+                if (HYPHEN_POSITIONS.find(i) != HYPHEN_POSITIONS.end())
                     i++;
-                uuid[i] = CHARS[extractNumberAtPosition(n)];
+                uuid[i] = CHARS[extractIntFromPosition(n)];
                 i++;
             }
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
+            for (int hyphen_position : HYPHEN_POSITIONS)
+            {
+                assert(uuid[hyphen_position] == '-');
+            }
+#endif DEEP_TEST_ULTRA_SIMPLE_UUIDS
             return uuid;
         }
 
-        void fromString(std::string inString)
+        bool fromString(std::string inString)
         {
-            assert(inString.length() == UUID_STR_LEN);
+            // check the string is well formed
+            if (inString.length() != UUID_STR_LEN) { return false; }
+            for (int hyphen_position : HYPHEN_POSITIONS)
+            {
+                if (inString[hyphen_position] != '-') { return false; }
+            }
             int char_pos = 0;
             for (int i = 0; i < inString.length(); i++)
             {
-                if (HYPHEN_POSITIONS.find(char_pos) != HYPHEN_POSITIONS.end())
-                    continue;
+                if (HYPHEN_POSITIONS.find(i) != HYPHEN_POSITIONS.end())
+                    i++;
                 std::size_t found = CHARS.find(inString[i]);
-                assert(found != std::string::npos);
-                encodeIntAtPosition(found, i);
+                if (found == std::string::npos) { return false; } // there's an illegal character in the string
+                encodeIntAtPosition(found, char_pos);
                 char_pos++;
             }
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
+            assert(inString == toString());
+#endif //DEEP_TEST_ULTRA_SIMPLE_UUIDS
+            return true;
         }
 
         void randomize() {
@@ -67,20 +86,50 @@ namespace UltraSimpleUUID {
 
             for (int num_idx = 0; num_idx < UUID_NUM_CHARS; num_idx++)
             {
-#ifdef DEBUG_UUIDS
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
                 assert((randoms[num_idx] & 63) == randoms[num_idx]);
-#endif// DEBUG_UUIDS
+#endif// DEEP_TEST_ULTRA_SIMPLE_UUIDS
                 encodeIntAtPosition(randoms[num_idx], num_idx);
             };
-#ifdef DEBUG_UUIDS
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
             for (int num_idx = 0; num_idx < UUID_NUM_CHARS; num_idx++)
             {
-                assert(randoms[num_idx] == extractNumberAtPosition(num_idx));
+                assert(randoms[num_idx] == extractIntFromPosition(num_idx));
             }
-#endif //DEBUG_UUIDS
+#endif //DEEP_TEST_ULTRA_SIMPLE_UUIDS
+        }
+
+        bool isNil()
+        {
+            for (int32_t value : values)
+            {
+                if (value != 0)
+                    return false;
+            }
+            return true;
+        }
+
+        void combine(std::string inString)
+        {
+            // @TODO: consider if this can be this simplistic, or if we need an MD5 hash here
+            // Ensure the string we're combining is long enough to effect all bits
+            std::string combine_string = inString;
+            while (combine_string.length() < UUID_NUM_CHARS)
+                combine_string += inString;
+            int uuid_idx = 0;
+            for (int combine_idx = 0; combine_idx < combine_string.length(); combine_idx++)
+            {
+                char c = combine_string[combine_idx];
+                int32_t i = (extractIntFromPosition(uuid_idx) + (int32_t)c)%CHARS.length();
+                encodeIntAtPosition(i, uuid_idx);
+                uuid_idx++;
+                uuid_idx = uuid_idx % UUID_NUM_CHARS;
+            }
         }
 
     private:
+        int32_t values[6] = { 0,0,0,0,0,0 };
+
         void encodeIntAtPosition(int32_t inNumber, int inPosition)
         {
             for (int bit_idx = 0; bit_idx < 6; bit_idx++)
@@ -90,9 +139,11 @@ namespace UltraSimpleUUID {
             }
         }
 
-        int32_t extractNumberAtPosition(int inPosition)
+        int32_t extractIntFromPosition(int inPosition)
         {
+#ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
             assert(inPosition < UUID_NUM_CHARS);
+#endif //DEEP_TEST_ULTRA_SIMPLE_UUIDS
             int32_t out_value = 0;
             for (int bit_idx = 0; bit_idx < 6; bit_idx++)
             {
@@ -103,7 +154,7 @@ namespace UltraSimpleUUID {
     };
 
     std::string generate() {
-        uuid throwaway_uuid = uuid();
+        Uuid throwaway_uuid = Uuid();
         throwaway_uuid.randomize();
         return throwaway_uuid.toString();
     }

@@ -5,6 +5,8 @@ project(SimpleUUIDTest)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+add_compile_definitions(DEEP_TEST_ULTRA_SIMPLE_UUIDS)
+
 SET(EXE_SOURCES ../UltraSimpleUUID.h ConversionTest.cpp)
 
 add_executable(SimpleUUIDTest ${EXE_SOURCES})
