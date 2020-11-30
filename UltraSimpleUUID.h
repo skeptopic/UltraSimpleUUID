@@ -42,7 +42,20 @@ namespace UltraSimpleUUID {
             return uuid;
         }
 
-
+        void fromString(std::string inString)
+        {
+            assert(inString.length() == UUID_STR_LEN);
+            int char_pos = 0;
+            for (int i = 0; i < inString.length(); i++)
+            {
+                if (HYPHEN_POSITIONS.find(char_pos) != HYPHEN_POSITIONS.end())
+                    continue;
+                std::size_t found = CHARS.find(inString[i]);
+                assert(found != std::string::npos);
+                encodeIntAtPosition(found, i);
+                char_pos++;
+            }
+        }
 
         void randomize() {
             std::random_device rd;
