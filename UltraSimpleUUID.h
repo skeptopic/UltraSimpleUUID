@@ -29,10 +29,23 @@ namespace UltraSimpleUUID {
     const std::set<int> HYPHEN_POSITIONS {8, 13, 18, 23};
     const unsigned short UUID_NUM_CHARS = 32;
     const unsigned short UUID_STR_LEN = UUID_NUM_CHARS + HYPHEN_POSITIONS.size();
+    const unsigned short BUFFER_SIZE = 24;
 
     class Uuid 
     {
     public:
+        bool operator==(const Uuid& inRhs)
+        {
+            for (int i = 0; i < 6; i++)
+                if (values[i] != inRhs.values[i]) { return false; }
+            return true;
+        }
+
+        bool operator!=(const Uuid& inRhs)
+        {
+            return !operator==(inRhs);
+        }
+
         std::string toString() {
             std::string uuid = std::string(UUID_STR_LEN, '-');
             int i = 0;
@@ -73,6 +86,19 @@ namespace UltraSimpleUUID {
 #ifdef DEEP_TEST_ULTRA_SIMPLE_UUIDS
             assert(inString == toString());
 #endif //DEEP_TEST_ULTRA_SIMPLE_UUIDS
+            return true;
+        }
+
+        unsigned short getBuffer(char *outBuffer[])
+        {
+            *outBuffer = (char*)&values;
+            return BUFFER_SIZE;
+        }
+
+        bool fromBuffer(char inBuffer[], unsigned short inSize)
+        {
+            if (inSize != BUFFER_SIZE) { return false; }
+            memcpy(values, inBuffer, BUFFER_SIZE);
             return true;
         }
 
