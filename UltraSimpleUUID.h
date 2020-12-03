@@ -179,6 +179,8 @@ namespace UltraSimpleUUID {
         }
     };
 
+
+
     std::string generate() {
         Uuid throwaway_uuid = Uuid();
         throwaway_uuid.randomize();

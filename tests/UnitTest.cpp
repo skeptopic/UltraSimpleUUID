@@ -1,4 +1,19 @@
-﻿#include <iostream>
+﻿/*
+Neil Chatterjee 2020
+
+This serves as a unit test for the functionality of UltraSimpleUUID.
+
+This includes:
+* Generation
+* String Serialization/Deserialization
+* IsNil
+* Combining UUIDs
+* Buffers
+* Equality Operator
+
+*/
+
+#include <iostream>
 #include "../UltraSimpleUUID.h"
 #include <map>
 #include <cassert>

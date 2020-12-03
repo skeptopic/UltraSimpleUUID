@@ -5,15 +5,10 @@ project(UltraSimpleUUIDTests)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_compile_definitions(DEEP_TEST_ULTRA_SIMPLE_UUIDS)
-SET(EXE_SOURCES ../UltraSimpleUUID.h AccuracyTests.cpp)
-add_executable(AccuracyTests ${EXE_SOURCES})
+SET(EXE_SOURCES ../UltraSimpleUUID.h UnitTest.cpp)
+add_executable(UnitTest ${EXE_SOURCES})
+target_compile_definitions(UnitTest PRIVATE DEEP_TEST_ULTRA_SIMPLE_UUIDS)
 
-#remove_definitions(DEEP_TEST_ULTRA_SIMPLE_UUIDS)
-#SET(EXE_SOURCES ../UltraSimpleUUID.h SpeedTests.cpp)
-#add_executable(SpeedTests ${EXE_SOURCES})
-
-remove_definitions(DEEP_TEST_ULTRA_SIMPLE_UUIDS)
-SET(EXE_SOURCES ../UltraSimpleUUID.h CollisionTests.cpp)
-add_executable(CollisionTests ${EXE_SOURCES})
+SET(EXE_SOURCES ../UltraSimpleUUID.h RandomnessTest.cpp)
+add_executable(RandomnessTest ${EXE_SOURCES})
 
