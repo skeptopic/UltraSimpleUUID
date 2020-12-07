@@ -12,3 +12,5 @@ target_compile_definitions(UnitTest PRIVATE DEEP_TEST_ULTRA_SIMPLE_UUIDS)
 SET(EXE_SOURCES ../UltraSimpleUUID.h RandomnessTest.cpp)
 add_executable(RandomnessTest ${EXE_SOURCES})
 
+SET(EXE_SOURCES ../UltraSimpleUUID.h PerformanceTests.cpp)
+add_executable(PerformanceTests ${EXE_SOURCES})

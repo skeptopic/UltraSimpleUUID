@@ -18,7 +18,7 @@ This includes:
 #include <map>
 #include <cassert>
 
-const int TEST_ITERATION_COUNT = 16;
+const int TEST_ITERATION_COUNT = 64;
 
 int main(int argc, char* argv[])
 {    
