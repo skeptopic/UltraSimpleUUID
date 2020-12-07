@@ -7,7 +7,22 @@ Extremely simple implementiaton of UUID v4 that is:
 
 There is already a more complete UUID implementations out there (https://github.com/mariusbancila/stduuid) but it has dependencies on the operating system and requires C++ 17. Quite often all you want is very simple UUIDs that are "good enough" and that what this for!
 
-I was inspired by https://gist.github.com/fernandomv3/46a6d7656f50ee8d39dc, but wanted some more features and found the randomness of this broken.
+## Usage
+
+Simply include `UltraSimpleUUID.h`
+
+`UltraSimpleUUID::generate()` is a convenience function that returns a randomly generated UUID string
+
+`UltraSimpleUUID::Uuid` is a class that represents a single UUID. It default-constructs a Nil UUID. It implements the following funcitons:
+* `isNil` is the current UUID [nil](https://en.wikipedia.org/wiki/Universally_unique_identifier#Nil_UUID)
+* `randomize` randomizes
+* `combine` combines a string into this UUID with a deterministic function.
+* `toString`/`fromString` convert this uuid to/from the `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` format
+* `toBuffer`/`fromBuffer` retrieve/set the 24 bytes that represent this UUID directly
+
+## Requires
+
+C++ 11 standard
 
 ## About UUIDs
 
@@ -27,24 +42,6 @@ However, random number generators in coomputers are never truly random, so I've 
 
 This suggests sufficient randomness, but lower than the theoretical value. I have attempted to use the most best randomness C++ 11 has to offer.
 
-## Requires
-
-C++ 11 standard
-
-## Usage
-
-Simply include `UltraSimpleUUID.h`
-
-`UltraSimpleUUID::generate()` is a convenience function that returns a randomly generated UUID string
-
-`UltraSimpleUUID::Uuid` is a class that represents a single UUID. It default-constructs a Nil UUID. It implements the following funcitons:
-* `isNil` is the current UUID [nil](https://en.wikipedia.org/wiki/Universally_unique_identifier#Nil_UUID)
-* `randomize` randomizes
-* `combine` combines a string into this UUID with a deterministic function.
-* `toString`/`fromString` convert this uuid to/from the `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` format
-* `toBuffer`/`fromBuffer` retrieve/set the 24 bytes that represent this UUID directly
-
-
 ## Testing
 
 This includes unit, performance, and randomness tests.
@@ -56,6 +53,7 @@ mkdir build
 cd build
 cmake ..
 cmake --build . --config Release
+ctest -C Release -VV
 ```
 
 This will also generate the applicaitons `PerformanceTests` and `RandomnessTest`
@@ -67,3 +65,7 @@ This will also generate the applicaitons `PerformanceTests` and `RandomnessTest`
 ## License
 
 There is no license. If you want to use this and find it useful, enjoy. Maybe drop me a message to let me know you are. 
+
+## Acknowledgement
+
+I was inspired by https://gist.github.com/fernandomv3/46a6d7656f50ee8d39dc, but wanted some more features and found the randomness of this broken.

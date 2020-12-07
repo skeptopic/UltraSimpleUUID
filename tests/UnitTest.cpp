@@ -19,10 +19,10 @@ This includes:
 #include <cassert>
 
 const int TEST_ITERATION_COUNT = 64;
+#define UNIT_TEST_ASSERT(expr, msg) if(!expr) { std::cout << "ERROR: " << msg << std::endl; return -1; }
 
 int main(int argc, char* argv[])
-{    
-
+{
     // Test the creation of random UUIDs, serialize to/from string
     for (int i = 0; i < TEST_ITERATION_COUNT; i++)
     {
@@ -31,15 +31,15 @@ int main(int argc, char* argv[])
         std::string u = id.toString();
         UltraSimpleUUID::Uuid oid;
         oid.fromString(u);
-        assert(u == oid.toString());
+        UNIT_TEST_ASSERT((u == oid.toString()), "UUID string serialization/deserialization failed");
     }
 
     // Test isNil
     {
         UltraSimpleUUID::Uuid id;
-        assert(id.isNil());
+        UNIT_TEST_ASSERT((id.isNil()), "Default contrsutcted UUID was not Nil");
         id.randomize();
-        assert(!id.isNil());
+        UNIT_TEST_ASSERT((!id.isNil()), "Randomized UUID had NIL value");
     }
 
     // Test Combine
@@ -48,12 +48,12 @@ int main(int argc, char* argv[])
         std::string long_string = "The Quick Brown Fox Jumped Over the Lazy Dog! N@n-^1p¨"; // Long, includes nonalphanumeric
         std::string short_string = "hi!"; // short, includes nonaplhanumeric
         UltraSimpleUUID::Uuid id;
-        assert(id.fromString(base_uuid));
+        UNIT_TEST_ASSERT((id.fromString(base_uuid)), "Deserialization from known string failed");
         id.combine(long_string);
-        assert("8Ei7JGoP-bXKg-1OJ9-rtxF-PwSx5I6cluzB" == id.toString());
+        UNIT_TEST_ASSERT(("8Ei7JGoP-bXKg-1OJ9-rtxF-PwSx5I6cluzB" == id.toString()), "Combination with a known long string produced unexpected result");
         id.fromString(base_uuid);
         id.combine(short_string);
-        assert("7ZzlTLpY-tbAi-NeoH-euBd-wtOg8N71YopM" == id.toString());
+        UNIT_TEST_ASSERT(("7ZzlTLpY-tbAi-NeoH-euBd-wtOg8N71YopM" == id.toString()), "Combination with a known short string produced unexpected result");
     }
 
     // Test Buffer
@@ -65,10 +65,10 @@ int main(int argc, char* argv[])
             id.randomize();
             char* buffer = nullptr;
             unsigned short size = id.getBuffer(&buffer);
-            assert(size == UltraSimpleUUID::BUFFER_SIZE);
+            UNIT_TEST_ASSERT((size == UltraSimpleUUID::BUFFER_SIZE), "Size of retrieved buffer is unexpected");
             UltraSimpleUUID::Uuid oid;
-            assert(oid.fromBuffer(buffer, size));
-            assert(id.toString() == oid.toString());
+            UNIT_TEST_ASSERT((oid.fromBuffer(buffer, size)), "Setting UUID from buffer failed");
+            UNIT_TEST_ASSERT((id.toString() == oid.toString()), "UUID set from buffer does not equal reference UUID");
         }
 
         // Test that a given known buffer translates to a given known UUID
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
             }
             UltraSimpleUUID::Uuid c;
             c.fromBuffer(buffer, UltraSimpleUUID::BUFFER_SIZE);
-            assert(c.toString() == uuid_text);
+            UNIT_TEST_ASSERT((c.toString() == uuid_text), "UUID set from known buffer did not produce exected result");
         }
         
     }
@@ -98,10 +98,11 @@ int main(int argc, char* argv[])
         std::string u = id.toString();
         UltraSimpleUUID::Uuid oid;
         oid.fromString(u);
-        assert(id == oid);
+        UNIT_TEST_ASSERT((id == oid), "Equality operator failed on two UUIDs set from the same string");
         oid.combine("Some Aribrary Text");
-        assert(id != oid);
+        UNIT_TEST_ASSERT((id != oid), "Inequality operator failed on two UUIDs that should be different");
     }
 
     std::cout << "Done\n";
+    return 0;
 }
